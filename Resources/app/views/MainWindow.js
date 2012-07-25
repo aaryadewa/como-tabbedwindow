@@ -1,7 +1,6 @@
 module.exports = function(Como) {
     var _ = require('/lib/Underscore/underscore.min'),
         UI = Como.loadUI(),
-        
         create, createTabbedWindow;
         
     create = function() {
@@ -12,39 +11,48 @@ module.exports = function(Como) {
         var TabbedWindow = require('/app/views/common/TabbedWindow'),
             Dashboard = require('/app/views/Dashboard'),
             News = require('/app/views/News'),
+            configuration, profile, dashboard, news, tabbedWindow;
             
-            menubar = new TabbedWindow(Como);
+        configuration = new UI.view({
+            backgroundColor: '#FFF',
+            backgroundImage: '/images/bg.png'
+        });
+        
+        profile = new UI.view({
+            backgroundColor: '#FFF',
+            backgroundImage: '/images/bg.png'
+        });
+        
+        dashboard = new Dashboard(Como).create();
+        news = new News(Como).create();
+        tabbedWindow = new TabbedWindow(Como);
             
-        return menubar.create({
-            menus: [
+        return tabbedWindow.create({
+            items: [
                 {
                     tab: {
                         icon: '/images/config.png'
                     },
-                    view: new UI.view({
-                        backgroundColor: '#AAA'
-                    })
+                    view: configuration
                 },
                 {
                     tab: {
                         icon: '/images/profile.png'
                     },
-                    view: new UI.view({
-                        backgroundColor: '#BBB'
-                    })
+                    view: profile
                 },
                 {
                     tab: {
                         icon: '/images/home.png'
                     },
-                    view: new Dashboard(Como).create(),
+                    view: dashboard,
                     isDefault: true
                 },
                 {
                     tab: {
                         icon: '/images/news.png'
                     },
-                    view: new News(Como).create()
+                    view: news
                 },
                 {
                     tab: {

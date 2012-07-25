@@ -8,13 +8,13 @@
         <target device="android">true</target>
     </deployment-targets>
     <sdk-version>2.1.1.v20120718121609</sdk-version>
-    <id>net.geekzy.mobile.tiapp.como</id>
-    <name>tiapp-como</name>
-    <version>2.0.1</version>
-    <publisher>GeekZy.Net</publisher>
-    <url>http://mobile.geekzy.net/</url>
-    <description>Como is a Titanium Appscelerator MVC Framework</description>
-    <copyright>2012 by GeekZy.Net</copyright>
+    <id>com.anantaad.comokitchensink</id>
+    <name>Como KitchenSink</name>
+    <version>1.0</version>
+    <publisher>anantaad</publisher>
+    <url>http://anantaad.com/</url>
+    <description>This is Kitchen Sink application uses Como MVC Titanium framework.</description>
+    <copyright>2012 Ananta Arya Dewa</copyright>
     <icon>appicon.png</icon>
     <persistent-wifi>false</persistent-wifi>
     <prerendered-icon>false</prerendered-icon>
@@ -40,6 +40,8 @@
         <manifest>
             <supports-screens android:anyDensity="true"
                 android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
+            <uses-permission android:name="android.permission.READ_CALENDAR"/>
+            <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
         </manifest>
     </android>
     <mobileweb>

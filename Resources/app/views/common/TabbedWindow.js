@@ -2,120 +2,118 @@ module.exports = function(Como) {
     var _ = require('/lib/Underscore/underscore.min'),
         $ = require('/lib/Como/Utils'),
         UI = Como.loadUI(),
-        
+        config = {},
+        win = new UI.win({
+            exitOnClose: true,
+            layout: 'absolute',
+            navBarHidden: true
+        }),
+        scrollableView = Ti.UI.createScrollableView(),
         create, buildViews, buildMenubar;
         
     create = function(opt) {
-        var win = new UI.win({
-                exitOnClose: true,
-                layout: 'absolute',
-                navBarHidden: true
-            }),
-            scrollableView = Ti.UI.createScrollableView(),
-            menubar,
-            iconSize = 48,
-            iconMargin = 5,
-            menus = opt.menus,
-            views = [];
+        var tabBar;
         
-        for(var i=0,j=menus.length; i<j; i++) {
-            views.push(menus[i].view);
-        };
-        scrollableView.views = views;
-        menubar = buildMenubar({
-            menus: menus,
-            page: scrollableView
-        });
+        $.log('[tabbar] height: '+Como.device.height+', width: '+Como.device.width);
+        
+        config = $.extend({
+            tabHeight: 64,
+            iconSize: 48,
+            iconMargin: 5,
+            items: []
+        }, opt);
+            
+        buildViews();
+        tabBar = buildMenubar();
         
         win.add(scrollableView);
-        win.add(menubar);
+        win.add(tabBar);
         
         Ti.Gesture.addEventListener('orientationchange', function(e) {
-            win.remove(menubar);
-            menubar = buildMenubar({
-                menus: menus,
-                page: scrollableView
-            });
-            win.add(menubar);
+            win.remove(tabBar);
+            tabBar = buildMenubar();
+            win.add(tabBar);
         });
         
         return win;
     };
     
-    buildViews = function(opt) {
+    buildViews = function() {
+        var views = [], items = config.items;
         
+        for(var i=0,j=items.length; i<j; i++) {
+            views.push(items[i].view);
+        }
+        
+        scrollableView.views = views;
     };
     
-    buildMenubar = function(opt) {
-        var page = opt.page,
-            menus = opt.menus,
-            iconSize = 48,
-            iconMargin = (Ti.Platform.displayCaps.platformWidth / menus.length) - iconSize,
-            menubar = new UI.view({
-                backgroundImage: '/images/toolbar.png',
-                bottom: 0,
-                height: '64dp',
-                left: 0
-            }),
-            buttonContainer = new UI.view({
-                bottom: 0,
-                height: Ti.UI.SIZE,
-                horizontalWrap: true,
-                layout: 'horizontal',
-                width: Ti.UI.SIZE
-            });
+    buildMenubar = function() {
+        var items = config.items,
+            iconSize = config.iconSize,
+            iconMargin = ($.pixelToDp(Ti.Platform.displayCaps.platformWidth) / items.length) - iconSize,
+            tabBar, indicator, buttonContainer;
         
-        var indicator = new UI.view({
+        tabBar = new UI.view({
+            backgroundImage: '/images/toolbar.png',
+            bottom: 0,
+            height: config.tabHeight+'dp',
+            left: 0
+        });
+        
+        buttonContainer = new UI.view({
+            bottom: 0,
+            height: Ti.UI.SIZE,
+            horizontalWrap: false,
+            layout: 'horizontal'
+        });
+        
+        indicator = new UI.view({
             backgroundImage: '/images/indicator.png',
             height: '20dp',
-            left: getIndicatorLeftMargin(0),
+            left: calculateIndicatorPosition(0),
             top: '-6dp',
             width: '16dp'
         });
             
-        for(var i=0,j=menus.length; i<j; i++){
-            var button = new UI.button({
-                    backgroundImage: menus[i].tab.icon,
+        for(var i=0,j=items.length; i<j; i++){
+            var item = items[i],
+                button = new UI.button({
+                    backgroundImage: item.tab.icon,
                     bottom: 0,
                     height: iconSize+'dp',
-                    left: (iconMargin/2)+'dp',
+                    left: (iconMargin / 2)+'dp',
                     objIndex: i,
-                    right: (iconMargin/2)+'dp',
+                    right: (iconMargin / 2)+'dp',
                     width: iconSize+'dp'
-                }),
-                view = i;
+                });
                 
-            page.addEventListener('scrollEnd', function(e) {
-                var idx = e.currentPage,
-                    sectionWidth = Ti.Platform.displayCaps.platformWidth / menus.length,
-                    iconMiddle = sectionWidth / 2;
-                
-                indicator.left = getIndicatorLeftMargin(idx);
-            });
-            
-            if (menus[i].isDefault) {
-                indicator.left = getIndicatorLeftMargin(i);
-                page.setCurrentPage(i);
+            if (item.isDefault) {
+                indicator.left = calculateIndicatorPosition(i);
+                scrollableView.setCurrentPage(i);
             }
             
             button.click(function(e) {
-                var idx = e.source.objIndex;
-                page.scrollToView(idx);
+                scrollableView.scrollToView(e.source.objIndex);
             });
             buttonContainer.add(button);
-        };
+        }
         
-        menubar.add(buttonContainer);
-        menubar.add(indicator);
+        scrollableView.addEventListener('scrollEnd', function(e) {
+            indicator.left = calculateIndicatorPosition(e.currentPage);
+        });
         
-        function getIndicatorLeftMargin(currentPage) {
-            var sectionWidth = Ti.Platform.displayCaps.platformWidth / menus.length,
+        tabBar.add(buttonContainer);
+        tabBar.add(indicator);
+        
+        function calculateIndicatorPosition(currentPage) {
+            var sectionWidth = $.pixelToDp(Ti.Platform.displayCaps.platformWidth) / items.length,
                 iconMiddle = sectionWidth / 2;
             
             return ((sectionWidth * (currentPage+1)) - iconMiddle - 8)+'dp';
         }
         
-        return menubar;
+        return tabBar;
     };
         
     return {

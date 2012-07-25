@@ -1,7 +1,6 @@
 module.exports = function(Como) {
     var _ = require('/lib/Underscore/underscore.min'),
         UI = Como.loadUI(),
-        
         create;
         
     create = function() {
@@ -33,11 +32,11 @@ module.exports = function(Como) {
                     icon: '/images/dashboard/map.png'
                 },
                 {
-                    action: 'Dashboard/showSearch',
+                    action: 'Dashboard/showDirectory',
                     icon: '/images/dashboard/search.png'
                 },
                 {
-                    action: 'Dashboard/showTodo',
+                    action: 'Dashboard/showNote',
                     icon: '/images/dashboard/todo.png'
                 },
                 {

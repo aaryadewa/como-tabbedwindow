@@ -1,9 +1,9 @@
 #appname:tiapp-como
-#appid:net.geekzy.mobile.tiapp.como
+#appid:com.anantaad.comokitchensink
 #type:mobile
 #guid:b5532cc6-a299-4380-a897-87de50f8983a
 #version:1.0
-#publisher:GeekZy.Net
-#url:http://mobile.geekzy.net/
+#publisher:anantaad
+#url:http://anantaad.com/
 #image:appicon.png
-#desc:Como is a Titanium Appscelerator MVC Framework
+#desc:This is Kitchen Sink application uses Como MVC Titanium framework.

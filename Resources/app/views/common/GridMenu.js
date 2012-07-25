@@ -2,7 +2,7 @@ module.exports = function(Como) {
     var _ = require('/lib/Underscore/underscore.min'),
         $ = require('/lib/Como/Utils'),
         UI = Como.loadUI(),
-        
+        config = {},
         create, buildGrid;
         
     create = function(opt) {
@@ -10,25 +10,47 @@ module.exports = function(Como) {
                 backgroundColor: '#FFF',
                 backgroundImage: '/images/bg.png'
             }),
-            config = $.extend({
-                iconSize: 90,
-                items: []
-            }, opt),
+            wrapper;
+            
+        config = $.extend({
+            iconSize: 90,
+            items: []
+        }, opt);
+            
+        wrapper = buildGrid();
+        view.add(wrapper);
+            
+        Ti.Gesture.addEventListener('orientationchange', function(e) {
+            view.remove(wrapper);
+            wrapper = buildGrid();
+            view.add(wrapper);
+        });
+        
+        return view;
+    };
+    
+    buildGrid = function() {
+        var wrapper = new UI.scrolly({
+                bottom: '64dp'
+            }),
             currentRow = 1,
             currentColumn = 1,
             iconSize = config.iconSize,
-            columnSize = Math.floor(Ti.Platform.displayCaps.platformWidth / iconSize),
-            itemSize = Ti.Platform.displayCaps.platformWidth / columnSize,
-            left = itemSize - iconSize,
-            top = itemSize - iconSize,
+            numOfColumn = Math.floor($.pixelToDp(Ti.Platform.displayCaps.platformWidth) / iconSize),
+            itemSize = $.pixelToDp(Ti.Platform.displayCaps.platformWidth) / numOfColumn,
+            iconMargin = itemSize - iconSize,
+            left = iconMargin + (iconMargin / 4),
+            top = 0,
             items = config.items;
             
+        wrapper.top = left+'dp';
+            
         for(var i=0,j=items.length; i<j; i++){
-            if (currentColumn > columnSize) {
+            if (currentColumn > numOfColumn) {
                 currentColumn = 1;
                 currentRow++;
-                left = itemSize - iconSize;
-                top += iconSize + (left / 2);
+                left = iconMargin + (iconMargin / 4);
+                top += iconSize + (iconMargin / 2);
             }
             var menu = UI.view({
                 backgroundImage: items[i].icon,
@@ -38,21 +60,16 @@ module.exports = function(Como) {
                 width: iconSize+'dp'
             });
             
-            left += iconSize + ((itemSize - iconSize) / 2);
-            currentColumn++;
-            view.add(menu);
-        };
+            menu.on('click', items[i].action);
             
-        return view;
+            left += iconSize + (iconMargin / 2);
+            currentColumn++;
+            wrapper.add(menu);
+        }
+        
+        return wrapper;
     };
     
-    buildGrid = function(opt) {
-        var config = $.extend({
-            iconSize: 90,
-            items: []
-        }, opt);
-    };
-        
     return {
         create: create
     };

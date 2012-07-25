@@ -4,7 +4,7 @@ module.exports = (function () {
         _ = require('/lib/Underscore/underscore.min'),
         // utilities interface
         emptyFn = function () {},
-        ajax, notty, extend, deviceOnline, filenameOfURL, execute;
+        ajax, notty, extend, deviceOnline, filenameOfURL, execute, log, pixelToDp;
 
     /**
      * Create a HTTP Client for accessing remote HTTP service
@@ -194,6 +194,10 @@ module.exports = (function () {
     deviceOnline = function() {
         return Ti.Network.online;
     };
+    
+    pixelToDp = function(num) {
+        return (num / (Ti.Platform.displayCaps.dpi / 160));
+    };
 
     /**
      * Execute a function within a context
@@ -209,6 +213,11 @@ module.exports = (function () {
         }
 
         return ctx[func].apply(this, args);
+    };
+    
+    log = function(message, level) {
+        var lv = level || 'info';
+        Ti.API.log(lv, message);
     };
 
     return {
@@ -258,12 +267,21 @@ module.exports = (function () {
          * @return device connectivity status, true - online; false - offline
          */
         deviceOnline: deviceOnline,
+        
+        pixelToDp: pixelToDp,
 
         /**
          * Execute a function within a context
          * @param {String} functionName the function name/path
          * @param {Object} context the context of the function to execute
          */
-        execute: execute
+        execute: execute,
+        
+        /**
+         * Print message log to the console output
+         * @param {String} message The message to be printed on the output
+         * @param {String} level Debug level. Default to info
+         */
+        log: log
     };
 }());
