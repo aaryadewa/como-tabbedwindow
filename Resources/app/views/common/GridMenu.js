@@ -14,7 +14,8 @@ module.exports = function(Como) {
             
         config = $.extend({
             iconSize: 90,
-            items: []
+            items: [],
+            minIconMargin: 8
         }, opt);
             
         wrapper = buildGrid();
@@ -36,10 +37,11 @@ module.exports = function(Como) {
             currentRow = 1,
             currentColumn = 1,
             iconSize = config.iconSize,
-            numOfColumn = Math.floor($.pixelToDp(Ti.Platform.displayCaps.platformWidth) / iconSize),
+            numOfColumn = Math.floor($.pixelToDp(Ti.Platform.displayCaps.platformWidth) / (iconSize + config.minIconMargin)),
             itemSize = $.pixelToDp(Ti.Platform.displayCaps.platformWidth) / numOfColumn,
             iconMargin = itemSize - iconSize,
-            left = iconMargin + (iconMargin / 4),
+            segmentSize = iconMargin / 2,
+            left = segmentSize + (segmentSize / numOfColumn * (numOfColumn / 2)),
             top = 0,
             items = config.items;
             
@@ -49,8 +51,8 @@ module.exports = function(Como) {
             if (currentColumn > numOfColumn) {
                 currentColumn = 1;
                 currentRow++;
-                left = iconMargin + (iconMargin / 4);
-                top += iconSize + (iconMargin / 2);
+                left = segmentSize + (segmentSize / numOfColumn * (numOfColumn / 2));
+                top += iconSize + (left);
             }
             var menu = UI.view({
                 backgroundImage: items[i].icon,
@@ -62,7 +64,7 @@ module.exports = function(Como) {
             
             menu.on('click', items[i].action);
             
-            left += iconSize + (iconMargin / 2);
+            left += iconSize + (segmentSize + (segmentSize / numOfColumn * (numOfColumn / 2)));
             currentColumn++;
             wrapper.add(menu);
         }
