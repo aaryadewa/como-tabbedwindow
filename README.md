@@ -81,7 +81,7 @@ Components created using UIShortcut factory are action aware. It means that we c
 win.click('Controller/action', param1, 'param2');
 ```
 
-To define a Controller we need to use CommonJS module. We will pass Como in Contruction function and we will return the public API
+To define a Controller we need to use CommonJS module. We will pass Como in Construction function and we will return the public API
 
 ```js
 // /app/controllers/Test.js
